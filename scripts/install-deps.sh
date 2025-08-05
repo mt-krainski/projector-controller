@@ -5,6 +5,7 @@
 #
 # This script:
 # - Checks if arduino-cli is installed
+# - Installs the arduino:megaavr platform needed for compilation
 # - Installs the IRRemote library needed for IR signal transmission/reception
 # - Provides clear error messages if anything fails
 
@@ -25,6 +26,21 @@ if ! command -v arduino-cli &> /dev/null; then
 fi
 
 echo "✅ arduino-cli found"
+
+# Install arduino:megaavr platform
+echo ""
+echo "📦 Installing arduino:megaavr platform..."
+if arduino-cli core install "arduino:megaavr"; then
+    echo "✅ arduino:megaavr platform installed successfully"
+else
+    echo "❌ Failed to install arduino:megaavr platform"
+    echo ""
+    echo "Troubleshooting:"
+    echo "  - Check your internet connection"
+    echo "  - Try running: arduino-cli core update-index"
+    echo "  - Verify the platform name is correct"
+    exit 1
+fi
 
 # Install IRRemote library
 echo ""
