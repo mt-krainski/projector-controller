@@ -1,5 +1,7 @@
 # Projector IR Controller
 
+[![Build Status](https://github.com/mt-krainski/projector-controller/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mt-krainski/projector-controller/actions/workflows/ci.yml)
+
 An Arduino-based infrared (IR) controller for the Dangbei N2 Smart Projector that automates power management and input selection sequences.
 
 ## Overview

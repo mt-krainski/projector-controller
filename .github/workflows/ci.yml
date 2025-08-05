@@ -1,10 +1,13 @@
-name: Compile Arduino Project
+name: Build
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
+  schedule:
+    # Run on the 1st of every month at 00:00 UTC
+    - cron: "0 0 1 * *"
 
 jobs:
   compile:
