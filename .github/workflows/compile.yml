@@ -1,0 +1,38 @@
+name: Compile Arduino Project
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Arduino CLI
+        uses: arduino/setup-arduino-cli@v1
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: |
+          ./scripts/install-deps.sh
+
+      - name: Create mock board configuration
+        run: |
+          # Create mock board files for CI environment
+          echo "arduino:megaavr:nona4809" > .board_fqbn
+
+      - name: Compile ProjectorController
+        run: |
+          ./scripts/compile.sh
+
+      - name: Verify compilation output
+        run: |
+          echo "✅ Arduino project compiled successfully!"
+          echo "📁 Compiled files should be in build directory"

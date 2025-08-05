@@ -33,11 +33,11 @@ The schematic was built using Circuit Canvas and can be found [here](https://cir
 
 #### Schematic
 
-![Detailed schematic](img/Projector%20IR%20Controller-schematic.png)
+![Detailed schematic](img/projector-ir-controller-schematic.png)
 
 #### Layout
 
-![Circuit layout diagram](img/Projector%20IR%20Controller-layout.png)
+![Circuit layout diagram](img/projector-ir-controller-layout.png)
 
 ## Software Implementation
 
@@ -108,38 +108,73 @@ The project includes comprehensive IR code mapping for the Dangbei N2 Smart Proj
 
 ## Development Setup
 
-I used an **Arduino Nano Every** for this project. Here's my setup:
+I used an **Arduino Nano Every** for this project. The project includes a set of automation scripts to simplify the development workflow.
 
 ### Hardware
 
 - **Board**: Arduino Nano Every (ATmega4809 processor)
 - **FQBN**: `arduino:megaavr:nona4809`
 
-### Upload Commands
+### Development Scripts
+
+The project includes several scripts in the `scripts/` directory to automate common development tasks:
+
+#### Initial Setup
+
+Install required dependencies; one time only:
 
 ```bash
-# Auto-upload (recommended)
-./scripts/auto-upload.sh
-
-# Manual upload
-arduino-cli lib install "IRRemote"
-arduino-cli compile --fqbn arduino:megaavr:nona4809 src/ProjectorController/
-arduino-cli upload --fqbn arduino:megaavr:nona4809 --port <usb port with Arduino> src/ProjectorController/
-
-# Monitor serial output
-arduino-cli monitor --port <usb port with Arduino> --config baudrate=115200
+./scripts/install-deps.sh
 ```
+
+When starting to work on the project, discover and configure your Arduino board. I.e. Execute this after connecting the board to your computer:
+
+```bash
+./scripts/init.sh
+```
+
+The `init.sh` script automatically discovers your connected Arduino board and extracts the necessary port and board information. By default it looks for boards matching "Arduino Nano Every", but you can specify a different board name as a parameter, e.g. `./scripts/init.sh "Arduino Uno"`
+
+#### Build and Upload
+
+```bash
+./scripts/build-and-upload.sh
+```
+
+Or run as individual steps:
+
+```bash
+./scripts/compile.sh
+./scripts/upload.sh
+```
+
+The build process automatically uses the board information discovered by `init.sh` and provides detailed error messages if anything goes wrong.
+
+#### Monitoring
+
+```bash
+./scripts/monitor.sh
+```
+
+This opens a serial monitor with the correct settings (115200 baud rate) to view debug output from the ProjectorController.
+
+### Script Features
+
+- **Automatic Board Discovery**: The `init.sh` script scans for connected Arduino boards and extracts port/FQBN information. This information is stored in `.board_port` and `.board_fqbn` files for use by other scripts.
+- **Dependency Management**: The `install-deps.sh` script ensures all required libraries are installed
+- **Error Handling**: All scripts provide clear error messages and troubleshooting tips
+- **Connection Validation**: Scripts verify that the board is still connected before attempting operations
+- **Serial Monitoring**: Easy access to debug output with proper configuration
 
 **Notes**:
 
-- The Nano Every uses a different processor (ATmega4809) than the regular Nano (ATmega328P), so this needs to use `arduino:megaavr:nona4809` instead of `arduino:avr:nano`.
-- During the upload, you can see a message like `avrdude: jtagmkII_initialize(): Cannot locate "flash" and "boot" memories in description`. This is normal and can be ignored.
+- During upload, you may see messages like `avrdude: jtagmkII_initialize(): Cannot locate "flash" and "boot" memories in description`. This is normal and can be ignored
 
 ## Usage
 
 1. **Setup**: Connect the circuit to your Arduino and upload the `src/ProjectorController/ProjectorController.ino` code
 2. **Operation**: Flip the physical switch to trigger power on/off sequences
-3. **Status**: LED indicators provide visual feedback during operation
+3. **Status**: the LED indicator provides visual feedback during operation. It blinks a few times when a sequence is started or finished. It blinks a single time for each button press sent.
 
 ## Technical Details
 
