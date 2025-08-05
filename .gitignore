@@ -1,3 +1,7 @@
+# Project-specific
+.board_fqbn
+.board_port
+
 # Arduino IDE
 *.hex
 *.elf

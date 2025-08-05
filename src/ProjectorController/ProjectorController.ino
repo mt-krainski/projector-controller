@@ -153,7 +153,7 @@ void loop() {
 
   if (buttonState == HIGH) {
     // ON sequence - turns ON the device and selects the HDMI input device
-    // POWER, (5s, wait for the device to turn on), HOME, UP, DOWN, OK
+    // POWER, (10s wait for the device to turn on), HOME, UP, DOWN, OK
     
     currentState = 1;
 

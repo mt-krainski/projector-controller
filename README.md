@@ -106,6 +106,35 @@ The project includes comprehensive IR code mapping for the Dangbei N2 Smart Proj
 | PRIME VIDEO | NEC      | 0x281   | 0x50    | 0xAF500281 |
 | YOUTUBE     | NEC      | 0x281   | 0x55    | 0xAA550281 |
 
+## Development Setup
+
+I used an **Arduino Nano Every** for this project. Here's my setup:
+
+### Hardware
+
+- **Board**: Arduino Nano Every (ATmega4809 processor)
+- **FQBN**: `arduino:megaavr:nona4809`
+
+### Upload Commands
+
+```bash
+# Auto-upload (recommended)
+./scripts/auto-upload.sh
+
+# Manual upload
+arduino-cli lib install "IRRemote"
+arduino-cli compile --fqbn arduino:megaavr:nona4809 src/ProjectorController/
+arduino-cli upload --fqbn arduino:megaavr:nona4809 --port <usb port with Arduino> src/ProjectorController/
+
+# Monitor serial output
+arduino-cli monitor --port <usb port with Arduino> --config baudrate=115200
+```
+
+**Notes**:
+
+- The Nano Every uses a different processor (ATmega4809) than the regular Nano (ATmega328P), so this needs to use `arduino:megaavr:nona4809` instead of `arduino:avr:nano`.
+- During the upload, you can see a message like `avrdude: jtagmkII_initialize(): Cannot locate "flash" and "boot" memories in description`. This is normal and can be ignored.
+
 ## Usage
 
 1. **Setup**: Connect the circuit to your Arduino and upload the `src/ProjectorController/ProjectorController.ino` code
