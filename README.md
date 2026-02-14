@@ -46,13 +46,13 @@ The schematic was built using Circuit Canvas and can be found [here](https://cir
 
 ### Dependencies
 
-- [Arduino IR Remote Library](https://github.com/Arduino-IRremote/Arduino-IRremote), version 4.4.3 - For IR signal transmission and reception
+- [Arduino IR Remote Library](https://github.com/Arduino-IRremote/Arduino-IRremote) v4.4.3 — IR signal transmission and reception
 
 ### Key Features
 
 - **IR Code Recording**: Built-in recording mode using the Arduino IR Remote Library to capture all remote button codes
 - **Sequenced Operations**: Implements sequence handling for power management and input selection
-- **Boot Type Detection**: Perform output selection only on cold boot
+- **Boot Type Detection**: Performs output selection only on cold boot
 - **Physical Interface**: Simple switch-based control with LED status indicators
 
 ### Functionality
@@ -81,7 +81,7 @@ To record IR codes from the original remote:
 2. Power On Sequence
    1. Sends POWER command
    2. Waits for sensor to pick up bright light (projector turns on)
-   3. Determine boot type:
+   3. Determines boot type:
       1. If boot sequence took less than 10 seconds, we assume hot boot - no additional steps are necessary
       2. If boot sequence took more than 10 seconds, we assume cold boot. Perform additional sequence to select proper output:
          1. Navigates to HOME menu
@@ -133,13 +133,13 @@ Install required dependencies; one time only:
 ./scripts/install-deps.sh
 ```
 
-When starting to work on the project, discover and configure your Arduino board. I.e. Execute this after connecting the board to your computer:
+When starting to work on the project, discover and configure your Arduino board (i.e. run this after connecting the board to your computer):
 
 ```bash
 ./scripts/init.sh
 ```
 
-The `init.sh` script automatically discovers your connected Arduino board and extracts the necessary port and board information. By default it looks for boards matching "Arduino Nano Every", but you can specify a different board name as a parameter, e.g. `./scripts/init.sh "Arduino Uno"`
+The `init.sh` script automatically discovers your connected Arduino board and extracts the necessary port and board information. By default, it looks for boards matching "Arduino Nano Every", but you can specify a different board name as a parameter, e.g. `./scripts/init.sh "Arduino Uno"`.
 
 #### Build and Upload
 
@@ -174,17 +174,17 @@ This opens a serial monitor with the correct settings (115200 baud rate) to view
 
 **Notes**:
 
-- During upload, you may see messages like `avrdude: jtagmkII_initialize(): Cannot locate "flash" and "boot" memories in description`. This is normal and can be ignored
+- During upload, you may see messages like `avrdude: jtagmkII_initialize(): Cannot locate "flash" and "boot" memories in description`. These are normal and can be ignored.
 
 ## Usage
 
 1. **Setup**: Connect the circuit to your Arduino and upload the `src/ProjectorController/ProjectorController.ino` code
 2. **Operation**: Flip the physical switch to trigger power on/off sequences
-3. **Status**: the LED indicator provides visual feedback during operation. It blinks a few times when a sequence is started or finished. It blinks a single time for each button press sent.
+3. **Status**: The LED indicator provides visual feedback during operation — a few blinks when a sequence starts or finishes, and a single blink for each button press sent.
 
 ## Technical Details
 
 - **IR Protocol**: NEC protocol with 32-bit data transmission
 - **Frequency**: Standard IR frequency (38kHz)
 - **Repeats**: 5 repeat transmissions for reliable signal reception
-- **Timing**: Measure boot time using a photoresistor
+- **Timing**: Boot time is measured using a photoresistor
