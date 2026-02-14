@@ -180,14 +180,21 @@ void loop() {
     IrSender.sendNEC(0x281, 0x1, repeats);
 
     int powerOnDelay = 0;
-    int photocellThreshold = (3*photocellBackgroundReading)/2;
+    int photocellThreshold = photocellBackgroundReading+300;
     bool lightDetected = false;
     
     for (int i=0; i<40; i++) {  // we sleep 500ms per loop, so this waits up to 20 seconds
       delay(500);
       powerOnDelay += 500;
       photocellReading = analogRead(photocellPin);
+
+      Serial.print("Photocell reading: ");
+      Serial.print(photocellReading);
+      Serial.print(" / ");
+      Serial.println(photocellThreshold);
+
       if (photocellReading > photocellThreshold) {
+        Serial.println("Threshold passed");
         lightDetected = true;
         break;
       }
