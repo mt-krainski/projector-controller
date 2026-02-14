@@ -26,6 +26,7 @@ The project includes a custom Arduino circuit with:
 - **Arduino Board**: Main microcontroller
 - **TSOP38238 IR Receiver**: For recording IR codes from the original remote
 - **950nm IR LED**: For sending IR signals to the projector
+- **CdS Photoresistor**: Visible light photoresistor for checking the projector boot time
 - **Physical Switch**: Manual trigger for power sequences
 - **Status LED**: Visual feedback for operation status
 
@@ -51,6 +52,7 @@ The schematic was built using Circuit Canvas and can be found [here](https://cir
 
 - **IR Code Recording**: Built-in recording mode using the Arduino IR Remote Library to capture all remote button codes
 - **Sequenced Operations**: Implements sequence handling for power management and input selection
+- **Boot Type Detection**: Perform output selection only on cold boot
 - **Physical Interface**: Simple switch-based control with LED status indicators
 
 ### Functionality
@@ -73,17 +75,19 @@ To record IR codes from the original remote:
 #### Normal mode
 
 1. Power Off Sequence
-
    1. Sends POWER command
    2. Sends OK command to confirm shutdown dialog
 
 2. Power On Sequence
-
    1. Sends POWER command
-   2. Waits 10 seconds for device startup
-   3. Navigates to HOME menu
-   4. Selects HDMI input via UP/DOWN navigation
-   5. Confirms selection with OK
+   2. Waits for sensor to pick up bright light (projector turns on)
+   3. Determine boot type:
+      1. If boot sequence took less than 10 seconds, we assume hot boot - no additional steps are necessary
+      2. If boot sequence took more than 10 seconds, we assume cold boot. Perform additional sequence to select proper output:
+         1. Navigates to HOME menu
+         2. Selects HDMI input via UP/DOWN navigation
+         3. Confirms selection with OK
+      3. If boot sequence took more than 20 seconds, we assume error. Nothing happens
 
 ## IR Codes
 
@@ -183,8 +187,4 @@ This opens a serial monitor with the correct settings (115200 baud rate) to view
 - **IR Protocol**: NEC protocol with 32-bit data transmission
 - **Frequency**: Standard IR frequency (38kHz)
 - **Repeats**: 5 repeat transmissions for reliable signal reception
-- **Timing**: Optimized delays for device response times
-
-## Caveats
-
-- The projector startup sometimes takes shorter, sometimes takes longer. It'd be reasonable to add a light sensor and place it close to the projector lamp to detect when the projector is on.
+- **Timing**: Measure boot time using a photoresistor

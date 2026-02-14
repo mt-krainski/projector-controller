@@ -10,6 +10,10 @@ const int buttonPin = 2;
 const int ledPin = 13;
 const int repeats = 5;
 
+int photocellPin = 0;
+int photocellReading;
+int photocellBackgroundReading = 0;
+
 // Last recorded state
 // 0 - off
 // 1 - on
@@ -153,40 +157,79 @@ void loop() {
 
   if (buttonState == HIGH) {
     // ON sequence - turns ON the device and selects the HDMI input device
-    // POWER, (10s wait for the device to turn on), HOME, UP, DOWN, OK
-    
-    currentState = 1;
+    // POWER, (wait for the device to turn on), (if long boot) HOME, UP, DOWN, OK (else) nothing
 
+    currentState = 1;
     blinkLed(2);
+    
     Serial.println("Turning ON...");
+    Serial.println("Calibrating sensor...");
+
+    for (int i=0; i<5; i++) {
+      photocellReading = analogRead(photocellPin);
+      photocellBackgroundReading = ((photocellBackgroundReading*i) + photocellReading)/(i+1);
+      delay(100);
+    }
+
+    Serial.println("Sensor calibrated");
+    Serial.print("Background reading: ");
+    Serial.println(photocellBackgroundReading);
     
     // POWER
     blinkLed();
     IrSender.sendNEC(0x281, 0x1, repeats);
-    delay(10000);
-    
-    // HOME
-    blinkLed();
-    IrSender.sendNEC(0x281, 0x9, repeats);
-    delay(1000);
-    
-    // UP
-    blinkLed();
-    IrSender.sendNEC(0x281, 0x3, repeats);
-    delay(500);
-    
-    // DOWN
-    blinkLed();
-    IrSender.sendNEC(0x281, 0x7, repeats);
-    delay(500);
 
-    // OK
-    blinkLed();
-    IrSender.sendNEC(0x281, 0x5, repeats);
-    delay(500);
+    int powerOnDelay = 0;
+    int photocellThreshold = (3*photocellBackgroundReading)/2;
+    bool lightDetected = false;
+    
+    for (int i=0; i<40; i++) {  // we sleep 500ms per loop, so this waits up to 20 seconds
+      delay(500);
+      powerOnDelay += 500;
+      photocellReading = analogRead(photocellPin);
+      if (photocellReading > photocellThreshold) {
+        lightDetected = true;
+        break;
+      }
+    }
 
+    if (!lightDetected) {
+      blinkLed(2);
+      delay(500);
+      blinkLed(2);
+      delay(500);
+      blinkLed(2);
+      Serial.println("Error, light not detected.");
+    } else {
+      if (powerOnDelay > 10000) {
+        Serial.println("Long boot detected. Sending long sequence.");
+        
+        // HOME
+        blinkLed();
+        IrSender.sendNEC(0x281, 0x9, repeats);
+        delay(1000);
+        
+        // UP
+        blinkLed();
+        IrSender.sendNEC(0x281, 0x3, repeats);
+        delay(500);
+        
+        // DOWN
+        blinkLed();
+        IrSender.sendNEC(0x281, 0x7, repeats);
+        delay(500);
+
+        // OK
+        blinkLed();
+        IrSender.sendNEC(0x281, 0x5, repeats);
+        delay(500);
+      } else {
+        Serial.println("Short boot detected. Doing nothing.");
+      }
+    }
+  
     blinkLed(5);
-    Serial.println("Sequence sent");
+    Serial.println("Sequence sent.");
   }
   #endif
 }
