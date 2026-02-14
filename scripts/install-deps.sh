@@ -42,10 +42,10 @@ else
     exit 1
 fi
 
-# Install IRRemote library
+# Install IRRemote library (version locked; 4.5.0+ changed IrSender.begin() API)
 echo ""
 echo "📦 Installing IRRemote library..."
-if arduino-cli lib install "IRRemote"; then
+if arduino-cli lib install "IRremote@4.4.3"; then
     echo "✅ IRRemote library installed successfully"
 else
     echo "❌ Failed to install IRRemote library"
