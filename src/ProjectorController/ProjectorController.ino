@@ -180,7 +180,7 @@ void loop() {
     IrSender.sendNEC(0x281, 0x1, repeats);
 
     int powerOnDelay = 0;
-    int photocellThreshold = photocellBackgroundReading+300;
+    int photocellThreshold = photocellBackgroundReading+100;
     bool lightDetected = false;
     
     for (int i=0; i<40; i++) {  // we sleep 500ms per loop, so this waits up to 20 seconds
@@ -210,6 +210,8 @@ void loop() {
     } else {
       if (powerOnDelay > 10000) {
         Serial.println("Long boot detected. Sending long sequence.");
+        // Wait for home screen to finish loading
+        delay(1000);
         
         // HOME
         blinkLed();
